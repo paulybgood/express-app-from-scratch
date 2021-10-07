@@ -1,6 +1,7 @@
 
 const port = process.env.port || 4000;
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -9,10 +10,11 @@ const pool = new Pool({
 
 app.use(express.json());
 app.use(express.static('public'));
+//app.use(cors());
 
 
 //======================================= Start of GET Request for Owners ================================
-// Get all owner information
+// Gets all owner information
 app.get('/api/owners', (req, res) => {
     pool.query('SELECT * FROM owners', (err, result) => {
         if (result.rows === undefined) {
@@ -21,11 +23,12 @@ app.get('/api/owners', (req, res) => {
                 .end('Owner not found');
         } else {
             res.send(result.rows);
+            return result.rows;
         }
     });
 });
 
-// Get owner information by their ID
+// Gets owner information by their ID
 app.get('/api/owners/:id', (req, res) => {
     let ownerID = req.params.id;
     pool.query('SELECT * FROM owners WHERE id = $1', [ownerID], (err, result) => {
@@ -41,7 +44,7 @@ app.get('/api/owners/:id', (req, res) => {
 //======================================== End of GET Request for Owners ==================================
 
 //======================================== Start of GET Request for Pets ==================================
-// Get all pet information
+// Gets all pet information
 app.get('/api/pets', (req, res) => {
     pool.query('SELECT * FROM pets', (err, result) => {
         if (result.rows === undefined) {
@@ -54,7 +57,7 @@ app.get('/api/pets', (req, res) => {
     });
 });
 
-// Get pet information by their ID
+// Gets pet information by their ID
 app.get('/api/pets/:id', (req, res) => {
     let petID = req.params.id;
     pool.query('SELECT * FROM pets WHERE id = $1', [petID], (err, result) => {
@@ -74,7 +77,7 @@ app.get('/api/pets/:id', (req, res) => {
 
 
 //======================================= Start of POST Request for Owners ================================
-// Create and add new owner information to the owners table of the familypets database
+// Creates and adds new owner information to the owners table of the familypets database
 app.post('/api/owners', (req,res) => {
     const { first_name, last_name } = req.body;
     pool.query(
@@ -90,7 +93,7 @@ app.post('/api/owners', (req,res) => {
 //======================================= End of POST Request for Owners ================================
 
 //======================================= Start of POST Request for Pets ================================
-// Create and add new pet information to the pets table of the familypets database
+// Creates and adds new pet information to the pets table of the familypets database
 app.post('/api/pets', (req,res) => {
     const { name, kind, age, owner_id } = req.body;
     pool.query(
@@ -110,7 +113,7 @@ app.post('/api/pets', (req,res) => {
 
 
 //======================================= Start of PATCH Request for Owners ==============================
-// Updating owner information by id
+// Updates  owner information by id
 app.patch('/api/owners/:id', (req,res) => {
     const { first_name, last_name } = req.body;
     const { id } = req.params;
@@ -129,7 +132,7 @@ app.patch('/api/owners/:id', (req,res) => {
 //======================================= End of PATCH Request for Owners ================================
 
 //======================================= Start of PATCH Request for Pets ================================
-// Updating pet information by id
+// Updates pet information by id
 app.patch('/api/pets/:id', (req,res) => {
     const { name, kind, age } = req.body;
     const { id } = req.params;
