@@ -1,4 +1,5 @@
 let userInput = '';
+const results = $('#results');
 
 $('#submit1').click (() => {
     //how to get the text value from the input on button click
@@ -7,7 +8,14 @@ $('#submit1').click (() => {
     // get the object about episodes from the show
     $.get(`/api/owners/${userInput}`, (data) => {
         console.log(data);
-    })
+        results.empty();
+        let $ownerTitle = $(`<div>Owner Info</div>`, {
+            class: "owner-info"
+        });
+        let name = $(`<div>Name: ${data.first_name} ${data.last_name}</div>`)
+        results.append($ownerTitle);
+        $ownerTitle.append(name);
+    });
 });
 
 
